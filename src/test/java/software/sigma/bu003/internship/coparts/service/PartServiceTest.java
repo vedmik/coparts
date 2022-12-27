@@ -5,11 +5,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import software.sigma.bu003.internship.coparts.client.CopartsClient;
 import software.sigma.bu003.internship.coparts.entity.Part;
+import software.sigma.bu003.internship.coparts.repository.PartRepository;
 import software.sigma.bu003.internship.coparts.service.exception.PartAlreadyCreatedException;
 import software.sigma.bu003.internship.coparts.service.exception.PartNotFoundException;
-import software.sigma.bu003.internship.coparts.repository.PartRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,11 +64,16 @@ class PartServiceTest {
 
     @Test
     void shouldReturnAllPartsSuccessfully() {
-        when(partRepository.findAll()).thenReturn(List.of(testPart));
+        int page = 0;
+        int size = 5;
+        Pageable paging = PageRequest.of(page, size);
+        Page<Part> tournamentEntitiesPage = new PageImpl<>(List.of(testPart), paging, 0);
 
-        sut.getAllParts();
+        when(partRepository.findAll(paging)).thenReturn(tournamentEntitiesPage);
 
-        verify(partRepository, times(1)).findAll();
+        sut.getAllParts(page,size);
+
+        verify(partRepository, times(1)).findAll(paging);
     }
 
     @Test

@@ -5,13 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import software.sigma.bu003.internship.coparts.entity.PageParts;
 import software.sigma.bu003.internship.coparts.entity.Part;
 import software.sigma.bu003.internship.coparts.service.PartService;
 import software.sigma.bu003.internship.coparts.service.exception.PartAlreadyCreatedException;
 import software.sigma.bu003.internship.coparts.service.exception.PartNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
@@ -89,16 +93,17 @@ class PartControllerTest {
 
     @Test
     void shouldReturnAllPartsSuccessfully() throws Exception {
-        List<Part> expectedList = List.of(testPart);
+        List<Part> parts = new ArrayList<>();
+        Page<Part> pageParts = new PageImpl<>(parts);
+        PageParts expectedResponse = new PageParts(pageParts);
 
-        when(partService.getAllParts()).thenReturn(expectedList);
+        when(partService.getAllParts(0, 5)).thenReturn(expectedResponse);
 
         mockMvc.perform(get(URL_TEMPLATE))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(String.format("[ %s ]", testPartJSON)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
-        verify(partService).getAllParts();
+        verify(partService).getAllParts(0,5);
     }
 
     @Test

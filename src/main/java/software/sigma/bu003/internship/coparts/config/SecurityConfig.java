@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .and()
                     .oauth2Login()
                 .and()
+                .csrf().disable()
                 .build();
     }
 
